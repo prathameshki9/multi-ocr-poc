@@ -1,0 +1,50 @@
+[
+    {
+        "type": "LAYOUT_HEADER",
+        "text": "7601 14th Ave Sacramento, CA 95820-3601 United States",
+        "page": 1,
+        "confidence": 51.85546875
+    },
+    {
+        "type": "LAYOUT_TITLE",
+        "text": "Ferguson Waterworks",
+        "page": 1,
+        "confidence": 26.9775390625
+    },
+    {
+        "type": "LAYOUT_TITLE",
+        "text": "INVOICE",
+        "page": 1,
+        "confidence": 43.017578125
+    },
+    {
+        "type": "LAYOUT_TEXT",
+        "text": "Invoice Number: INV-FW-250708-001 Purchase Order: KM2025070701 Invoice Date: July 8, 2025 Due Date: September 27, 2025",
+        "page": 1,
+        "confidence": 48.828125
+    },
+    {
+        "type": "LAYOUT_TEXT",
+        "text": "Bill To: Customer ID: C0000908 Business Unit: 1 Payment Terms: Net 81 Days",
+        "page": 1,
+        "confidence": 69.287109375
+    },
+    {
+        "type": "LAYOUT_TABLE",
+        "text": "Line Item/Part # Description Qty UOM Unit Price Line Total 1 MJ4LA24 Training Hours 4 EA $250.00 $1,000.00 2 - MJ Rest Service 4 EA $1,125.00 $4,500.00",
+        "page": 1,
+        "confidence": 69.091796875
+    },
+    {
+        "type": "LAYOUT_TABLE",
+        "text": "Payment Terms: Net 81 Days Currency: USD Subtotal: $5,500.00 Reference: This invoice corresponds to Purchase Order KM2025070701 dated June Tax: $0.00 20, 2025 Freight: $0.00 Total Due: $5,500.00",
+        "page": 1,
+        "confidence": 41.015625
+    },
+    {
+        "type": "LAYOUT_FOOTER",
+        "text": "Ferguson Waterworks - Invoice INV-FW-250708-001 Generated on July 8, 2025",
+        "page": 1,
+        "confidence": 73.388671875
+    }
+]
