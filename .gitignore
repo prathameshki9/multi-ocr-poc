@@ -8,9 +8,46 @@ wheels/
 
 # Virtual environments
 .venv
+venv/
+env/
 
 # Environment variables
 .env
+.env.local
 
 # Python version
 .python-version
+
+# Output directories (generated files)
+output/**/*.json
+
+# Input data (test files, PDFs, images)
+input_data/
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# AWS and temporary files
+.aws/
+*.tmp
+*.temp
+
+# Keep directory structure with .gitkeep files
+!**/.gitkeep
