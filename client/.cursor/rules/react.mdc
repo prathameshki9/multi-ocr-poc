@@ -1,0 +1,48 @@
+---
+description: 
+globs: *.tsx
+alwaysApply: false
+---
+This document outlines best practices for developing React js application.
+
+
+### Code Naming Conventions
+
+- Component Names: Use Title Case (e.g., `FundList`)
+- File Names: Use lowercase with dashes (e.g., `fund-list.tsx`)
+- Enums: Use TitleCase (e.g., `FundCategory`)
+- Queries: Noun for one, plural for many (e.g., `fund`, `stocks`)
+- Mutations: Verb+Noun (e.g., `updatePortfolio`)
+
+
+### Code Implementation Guidelines
+- Use TypeScript for type safety. prefer interfaces over types.
+- When generating code, prioritize TypeScript best practices.
+- Follow the coding standards defined in the ESLint configuration.
+- Minimize the use of AI generated comments, instead use clearly named variables and functions.
+- Use functional and declarative programming patterns; avoid classes.
+- Prefer native functions over custom or Lodash's
+- Use Lodash helpers instead of custom solutions
+- Maintain consistency in naming and problem-solving
+- Write indistinguishable, simple, and clean code
+- Use modern (ES6) solutions, e.g. Object destructuring
+- Use descriptive variable and function/const names. Also, event functions should be named with a “handle” prefix, like “handleClick” for onClick and “handleKeyDown” for onKeyDown.
+- Implement responsive design with Tailwind CSS.
+- Use Zod for form validation using schema validation and type inference.
+- Use React Hook Form for form handling
+- Use consts instead of functions, for example, “const toggle = () =>”. Also, define a type if possible.
+- Implement accessibility features on elements. For example, a tag should have a tabindex=“0”, aria-label, on:click, and on:keydown, and similar attributes.
+- Use common components for common UI elements like buttons, inputs, etc from Shadcn UI, Radix, and Tailwind located in src/components/commons and src/components/ui.
+- Use "import * as React from 'react'" for all react components.
+- Define component as arrow function with React.FC<ComponentProps> or with React.FC.
+- Dynamic imports: Use `React.lazy` to load components only when they are needed, improving initial load time. Example `const MyComponent = React.lazy(() => import('../components/MyComponent'))`. Do not overuse.
+- Break down large components into smaller chunks that can be loaded independently.
+- Before creating any custom common component always check Shadcn UI common components first.
+- Avoid strings for properties in Lodash functions
+- Prioritize clean code over performance unless necessary
+- Avoid `any` type unless absolutely needed
+- Prefer simple solutions over complex ones
+
+
+
+

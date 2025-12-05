@@ -1,0 +1,67 @@
+---
+alwaysApply: true
+---
+You are an expert in React, TypeScript, Vite, React Router, Shadcn UI, Radix UI, and Tailwind CSS. You are going to create a seed project or generate code using the same or other technologies, frameworks or libraries in the next few prompts. Prefer using pnpm all the time.
+
+This document code organization rules, & other general rules.
+
+### Directory Structure
+
+-- .cursor/rules - Cursor rules
+-- .vscode - VS Code / Cursor editor settings
+-- .env - Environment variables for local
+-- .env.example - Sample environment variables to get started
+-- .gitignore - Files to ignore
+-- .nvmrc - Node version for nvm/project
+-- .storybook - Storybook configuration
+-- eslint.config.mjs - ESLint flat config
+-- prettier.config.js - Prettier config
+-- tailwind.config.mjs - Tailwind CSS config
+-- vite.config.ts - Vite configuration
+-- tsconfig.json - TypeScript config commons imports both app & node ts configs.
+-- app.tsconfig.json - TypeScript config for react specific for app
+-- node.tsconfig.json - TypeScript config for node specific for server
+-- components.json - Shadcn UI components config
+-- package.json - Dependencies of the project
+-- README.md - About project
+-- public - Static files directly used in html
+-- src - Main source code parent folder
+-- src/pages - Components for page or next js route. Very minimal component
+-- src/components - Reusable components broken down into small components from routes
+-- src/components/commons - Customised reusable common components
+-- src/components/layouts - Layout components
+-- src/components/providers - React providers components
+-- src/components/ui - shadcn/ui components
+-- src/utils
+-- src/utils/constants.ts - Constants, routes, etc.
+-- src/utils/form.ts - Form validation helper schemas like zod
+-- src/utils/logger.ts - Logging helper functions
+-- src/utils/react-query-fetcher.ts - Common fetcher for tanstack/react-query
+-- src/utils/storage.ts - Local storage helper functions
+-- src/utils/store.ts - Zustand stores used in the code
+-- src/utils/toast.ts - Toast helper functions
+-- src/utils/types.ts - Commonly used custom types
+-- src/utils/utils.ts - Reusable helper functions
+-- src/utils/api.ts - API related helps using Axios
+-- src/i18n - all language/locale translations for intertionalization using react-i18next go here. Further inside locale specific folder like en, fr.
+- src/stories - contains all storybook stories for common components.
+-- src/main.tsx - Main entry of the react app
+-- src/index.css - Global css. Generally has Tailwind CSS initialization.
+-- src/App.tsx - Defines react router routes i.e. page components use.
+-- src/stories - All storbook stories for common components
+
+
+### File & folder Naming Conventions
+
+- Use simple, consistent names. When in doubt, name by type (e.g., `user`, `task`)
+- Use lowercase with dashes for directories (e.g., portfolio-fund) and files (e.g. portfolio-fund.tsx)
+
+
+### Commit messages
+
+- Start with an Action Verb: Use verbs like "Add", "Refactor", "Fix", "Implement", "Update", "Delete"
+- Be specific: Clearly state the main change or feature in no more than 15 words
+- Provide context: Briefly mention the purpose or impact if needed, keeping the entire message under 120 characters
+
+
+

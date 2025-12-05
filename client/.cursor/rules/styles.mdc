@@ -1,0 +1,18 @@
+---
+description: 
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+This document outlines best practices for developing React js application using Shadcn, Tailwind Radix UI.
+
+- Leverage the existing components provided by Shadcn UI whenever possible.
+- Customize components using styling solutions like Tailwind CSS's utility classes or CSS variables.
+- Create compound components by combining existing Shadcn UI components or Radix UI components to build more complex UI elements.
+- Use Shadcn UI's form components (e.g., `Input`, `Select`) for handling user input.
+- Implement accessible components by following ARIA guidelines and using appropriate HTML semantics.
+- Use the `cn` utility (classnames library) provided by Shadcn UI to manage CSS class names effectively.
+- Do not directly modifying the Shadcn UI component code.
+- Do not overuse custom CSS, as Shadcn UI is built with Tailwind CSS
+- Avoid Inline Styles: Refrain from using inline styles as much as possible. Tailwind provides a comprehensive set of utility classes, so most styling needs can be met without resorting to inline styles. Inline styles can make it harder to maintain and update the styles in your project.
+- "cn" utility provided by Shadcn UI is located in "src/utils/utils.ts". Do not re-create it.
+
