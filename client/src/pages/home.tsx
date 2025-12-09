@@ -5,12 +5,24 @@ import UploadPanel from '@/components/upload-panel';
 import DocumentPreview from '@/components/document-preview';
 import ExtractedResults from '@/components/extracted-results';
 
-type Extracted = string | Record<string, unknown> | Array<unknown>;
+type LayoutItem = {
+  type: string;
+  page: number;
+  confidence?: number;
+  geometry?: unknown;
+  text?: string;
+  table_data?: Array<Array<{
+    text: string;
+    rowIndex: number;
+    columnIndex: number;
+    [key: string]: unknown;
+  }>>;
+};
 
 const Home: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [extracted, setExtracted] = useState<string>('');
+  const [extracted, setExtracted] = useState<LayoutItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +34,7 @@ const Home: React.FC = () => {
 
   const handleFileChange = (selected: File | null) => {
     setFile(selected);
-    setExtracted('');
+    setExtracted([]);
     setError(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(selected ? URL.createObjectURL(selected) : null);
@@ -44,12 +56,23 @@ const Home: React.FC = () => {
       const response = await api.post('http://127.0.0.1:8000/api/v1/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      const data: Extracted = response.data;
-      setExtracted(typeof data === 'string' ? data : JSON.stringify(data, null, 2));
+      
+      // Extract LayoutData from the response
+      // Response structure: { message: { status, message, data: LayoutData[] } }
+      const message = response.data?.message;
+      const layoutData = message?.data || [];
+      
+      if (Array.isArray(layoutData)) {
+        setExtracted(layoutData as LayoutItem[]);
+      } else {
+        setExtracted([]);
+        setError('Unexpected response format from server');
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to extract text. Please try again.'
       );
+      setExtracted([]);
     } finally {
       setIsLoading(false);
     }
