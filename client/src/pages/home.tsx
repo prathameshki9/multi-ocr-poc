@@ -2,24 +2,11 @@ import React, { useEffect, useState } from 'react';
 import api from '@/utils/api';
 import Navbar from '@/components/navbar';
 import UploadPanel from '@/components/upload-panel';
-import DocumentPreview from '@/components/document-preview';
+import DocumentCanvasViewer from '@/components/document-canvas-viewer';
 import ExtractedResults from '@/components/extracted-results';
 import PreviouslyUploadedPanel from '@/components/previously-uploaded-panel';
 import { saveDocument, base64ToFile, type StoredDocument } from '@/utils/mockStorage';
-
-type LayoutItem = {
-  type: string;
-  page: number;
-  confidence?: number;
-  geometry?: unknown;
-  text?: string;
-  table_data?: Array<Array<{
-    text: string;
-    rowIndex: number;
-    columnIndex: number;
-    [key: string]: unknown;
-  }>>;
-};
+import type { LayoutItem } from '@/types/ocr';
 
 const Home: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -27,6 +14,7 @@ const Home: React.FC = () => {
   const [extracted, setExtracted] = useState<LayoutItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
 
   useEffect(() => {
     return () => {
@@ -38,8 +26,14 @@ const Home: React.FC = () => {
     setFile(selected);
     setExtracted([]);
     setError(null);
+    setSelectedItemIndex(null); // Reset selection when file changes
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(selected ? URL.createObjectURL(selected) : null);
+  };
+
+  const handleItemClick = (index: number) => {
+    // Toggle: if clicking the same item, deselect it
+    setSelectedItemIndex(prev => prev === index ? null : index);
   };
 
   const handleDocumentSelect = (doc: StoredDocument) => {
@@ -126,8 +120,19 @@ const Home: React.FC = () => {
         </section>
 
         <section id="results" className="grid gap-6 md:grid-cols-2">
-          <DocumentPreview file={file} previewUrl={previewUrl} />
-          <ExtractedResults extracted={extracted} isLoading={isLoading} error={error} />
+          <DocumentCanvasViewer
+            file={file}
+            previewUrl={previewUrl}
+            extractedData={extracted}
+            selectedItemIndex={selectedItemIndex}
+          />
+          <ExtractedResults
+            extracted={extracted}
+            isLoading={isLoading}
+            error={error}
+            selectedItemIndex={selectedItemIndex}
+            onItemClick={handleItemClick}
+          />
         </section>
       </main>
     </div>
