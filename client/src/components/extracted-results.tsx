@@ -1,27 +1,23 @@
 import React from 'react';
 import Card from './ui/card';
-
-type LayoutItem = {
-  type: string;
-  page: number;
-  confidence?: number;
-  geometry?: unknown;
-  text?: string;
-  table_data?: Array<Array<{
-    text: string;
-    rowIndex: number;
-    columnIndex: number;
-    [key: string]: unknown;
-  }>>;
-};
+import type { LayoutItem } from '@/types/ocr';
 
 type ExtractedResultsProps = {
   extracted: LayoutItem[];
   isLoading: boolean;
   error?: string | null;
+  selectedItemIndex?: number | null;
+  onItemClick?: (index: number) => void;
 };
 
-const LayoutItemCard: React.FC<{ item: LayoutItem }> = ({ item }) => {
+type LayoutItemCardProps = {
+  item: LayoutItem;
+  index: number;
+  isSelected: boolean;
+  onClick: (index: number) => void;
+};
+
+const LayoutItemCard: React.FC<LayoutItemCardProps> = ({ item, index, isSelected, onClick }) => {
   const renderContent = () => {
     if (item.table_data && item.table_data.length > 0) {
       // Flatten all cells and organize by rowIndex and columnIndex
@@ -32,17 +28,17 @@ const LayoutItemCard: React.FC<{ item: LayoutItem }> = ({ item }) => {
         entityTypes?: string[];
         [key: string]: unknown;
       }> = [];
-      
+
       item.table_data.forEach((row) => {
         row.forEach((cell) => {
           allCells.push(cell);
         });
       });
-      
+
       // Find max row and column indices
       const maxRow = Math.max(...allCells.map((c) => c.rowIndex), 0);
       const maxCol = Math.max(...allCells.map((c) => c.columnIndex), 0);
-      
+
       // Create a 2D grid organized by rowIndex and columnIndex
       const tableGrid: Array<Array<typeof allCells[0] | null>> = [];
       for (let r = 1; r <= maxRow; r++) {
@@ -55,7 +51,7 @@ const LayoutItemCard: React.FC<{ item: LayoutItem }> = ({ item }) => {
         }
         tableGrid.push(row);
       }
-      
+
       return (
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse text-sm">
@@ -92,7 +88,7 @@ const LayoutItemCard: React.FC<{ item: LayoutItem }> = ({ item }) => {
         </div>
       );
     }
-    
+
     if (item.text) {
       return (
         <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
@@ -100,14 +96,22 @@ const LayoutItemCard: React.FC<{ item: LayoutItem }> = ({ item }) => {
         </p>
       );
     }
-    
+
     return <p className="text-sm text-slate-400 italic">No content available</p>;
   };
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <div
+      onClick={() => onClick(index)}
+      className={`cursor-pointer rounded-lg border p-4 shadow-sm transition-all hover:shadow-md ${isSelected
+          ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200'
+          : 'border-slate-200 bg-white hover:border-indigo-300'
+        }`}
+    >
       <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
-        <h3 className="text-sm font-semibold text-slate-800">{item.type}</h3>
+        <h3 className={`text-sm font-semibold ${isSelected ? 'text-indigo-900' : 'text-slate-800'}`}>
+          {item.type}
+        </h3>
         <div className="flex items-center gap-2 text-xs text-slate-500">
           <span>Page {item.page}</span>
           {item.confidence !== undefined && (
@@ -126,6 +130,8 @@ const ExtractedResults: React.FC<ExtractedResultsProps> = ({
   extracted,
   isLoading,
   error,
+  selectedItemIndex = null,
+  onItemClick,
 }) => (
   <Card title="Extracted data" contentClassName="h-[520px] overflow-y-auto bg-slate-50">
     <div className="space-y-4">
@@ -137,22 +143,28 @@ const ExtractedResults: React.FC<ExtractedResultsProps> = ({
           </div>
         </div>
       )}
-      
+
       {!isLoading && error && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <p className="text-sm font-medium text-red-800">Error</p>
           <p className="mt-1 text-sm text-red-600">{error}</p>
         </div>
       )}
-      
+
       {!isLoading && !error && extracted.length > 0 && (
         <div className="space-y-3">
           {extracted.map((item, index) => (
-            <LayoutItemCard key={index} item={item} />
+            <LayoutItemCard
+              key={index}
+              item={item}
+              index={index}
+              isSelected={selectedItemIndex === index}
+              onClick={onItemClick || (() => { })}
+            />
           ))}
         </div>
       )}
-      
+
       {!isLoading && !error && extracted.length === 0 && (
         <div className="flex items-center justify-center py-12 text-center">
           <p className="text-sm text-slate-500">
@@ -165,4 +177,3 @@ const ExtractedResults: React.FC<ExtractedResultsProps> = ({
 );
 
 export default ExtractedResults;
-
