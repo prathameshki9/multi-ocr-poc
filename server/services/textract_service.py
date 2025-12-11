@@ -61,10 +61,20 @@ class TextractManager:
         else:
             return response
 
-    def upload_to_s3(self, file_path, object_name):
+    def upload_to_s3(self, object_name, file_path=None, file_bytes=None):
         try:
-            self.s3_client.upload_file(file_path, self.bucket_name, object_name)
-            logger.info(f"Uploaded {file_path} to s3://{self.bucket_name}/{object_name}")
+            if file_bytes:
+                self.s3_client.put_object(
+                    Body=file_bytes, 
+                    Bucket=self.bucket_name, 
+                    Key=object_name
+                )
+                logger.info(f"Uploaded bytes to s3://{self.bucket_name}/{object_name}")
+            elif file_path:
+                self.s3_client.upload_file(file_path, self.bucket_name, object_name)
+                logger.info(f"Uploaded {file_path} to s3://{self.bucket_name}/{object_name}")
+            else:
+                raise ValueError("Either file_path or file_bytes must be provided")
         except ClientError as e:
             logger.error(f"Error uploading to S3: {e}")
             raise
@@ -112,9 +122,14 @@ class TextractManager:
         }
         return final_response
 
-    def analyze_pdf(self, file_path, feature_types):
-        file_name = os.path.basename(file_path)
-        self.upload_to_s3(file_path, file_name)
+    def analyze_pdf(self, feature_types, file_path=None, file_bytes=None, file_name=None):
+        if not file_name:
+            if file_path:
+                file_name = os.path.basename(file_path)
+            else:
+                raise ValueError("file_name is required if file_path is not provided")
+                
+        self.upload_to_s3(file_name, file_path=file_path, file_bytes=file_bytes)
         
         try:
             response = self.textract_client.start_document_analysis(
@@ -343,18 +358,35 @@ class TextractManager:
         try:
             # Determine if it's a PDF or image
             is_pdf = False
-            if file_path:
-                is_pdf = file_path.lower().endswith('.pdf')
+            file_name_for_check = file_path
+            
+            # Use output_base_path as fallback for filename check if provided
+            if not file_name_for_check and output_base_path:
+                file_name_for_check = output_base_path
+                
+            if file_name_for_check:
+                is_pdf = file_name_for_check.lower().endswith('.pdf')
             
             # Process the document
             if is_pdf:
-                logger.info(f"Processing PDF: {file_path}")
-                result = self.analyze_pdf(file_path, feature_types)
+                logger.info(f"Processing PDF: {file_name_for_check}")
+                # Determine proper filename for S3
+                pdf_name = os.path.basename(file_path) if file_path else (os.path.basename(output_base_path) if output_base_path else "document.pdf")
+                
+                result = self.analyze_pdf(
+                    feature_types=feature_types,
+                    file_path=file_path,
+                    file_bytes=file_bytes,
+                    file_name=pdf_name
+                )
             else:
                 logger.info(f"Processing image document")
+                # If we have bytes, ensure we don't pass a non-existent path that analyze_file might try to open
+                path_to_pass = file_path if not file_bytes else None
+                
                 result = self.analyze_file(
                     feature_types=feature_types,
-                    document_file_name=file_path,
+                    document_file_name=path_to_pass,
                     document_bytes=file_bytes
                 )
             

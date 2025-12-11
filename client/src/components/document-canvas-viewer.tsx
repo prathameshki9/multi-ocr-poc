@@ -180,11 +180,11 @@ const DocumentCanvasViewer: React.FC<DocumentCanvasViewerProps> = ({
         // Draw the image
         ctx.drawImage(imageData, 0, 0, drawWidth, drawHeight);
 
-        // Filter items for current page
-        const pageItems = extractedData.filter(item => item.page === currentPage);
-
         // Draw bounding boxes - only show selected or hovered item
-        pageItems.forEach((item, index) => {
+        extractedData.forEach((item, index) => {
+            // Filter for current page
+            if (item.page !== currentPage) return;
+
             if (!item.geometry?.BoundingBox) return;
 
             const isSelected = selectedItemIndex === index;
