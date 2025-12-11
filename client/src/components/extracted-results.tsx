@@ -1,5 +1,4 @@
 import React from 'react';
-import Card from './ui/card';
 import type { LayoutItem } from '@/types/ocr';
 
 type ExtractedResultsProps = {
@@ -8,6 +7,7 @@ type ExtractedResultsProps = {
   error?: string | null;
   selectedItemIndex?: number | null;
   onItemClick?: (index: number) => void;
+  onItemHover?: (index: number | null) => void;
 };
 
 type LayoutItemCardProps = {
@@ -15,9 +15,10 @@ type LayoutItemCardProps = {
   index: number;
   isSelected: boolean;
   onClick: (index: number) => void;
+  onHover: (index: number | null) => void;
 };
 
-const LayoutItemCard: React.FC<LayoutItemCardProps> = ({ item, index, isSelected, onClick }) => {
+const LayoutItemCard: React.FC<LayoutItemCardProps> = ({ item, index, isSelected, onClick, onHover }) => {
   const renderContent = () => {
     if (item.table_data && item.table_data.length > 0) {
       // Flatten all cells and organize by rowIndex and columnIndex
@@ -103,9 +104,11 @@ const LayoutItemCard: React.FC<LayoutItemCardProps> = ({ item, index, isSelected
   return (
     <div
       onClick={() => onClick(index)}
+      onMouseEnter={() => onHover(index)}
+      onMouseLeave={() => onHover(null)}
       className={`cursor-pointer rounded-lg border p-4 shadow-sm transition-all hover:shadow-md ${isSelected
-          ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200'
-          : 'border-slate-200 bg-white hover:border-indigo-300'
+        ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200'
+        : 'border-slate-200 bg-white hover:border-indigo-300'
         }`}
     >
       <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
@@ -132,8 +135,9 @@ const ExtractedResults: React.FC<ExtractedResultsProps> = ({
   error,
   selectedItemIndex = null,
   onItemClick,
+  onItemHover,
 }) => (
-  <Card title="Extracted data" contentClassName="h-[520px] overflow-y-auto bg-slate-50">
+  <div className="h-full overflow-y-auto bg-white p-6">
     <div className="space-y-4">
       {isLoading && (
         <div className="flex items-center justify-center py-8">
@@ -160,6 +164,7 @@ const ExtractedResults: React.FC<ExtractedResultsProps> = ({
               index={index}
               isSelected={selectedItemIndex === index}
               onClick={onItemClick || (() => { })}
+              onHover={onItemHover || (() => { })}
             />
           ))}
         </div>
@@ -173,7 +178,7 @@ const ExtractedResults: React.FC<ExtractedResultsProps> = ({
         </div>
       )}
     </div>
-  </Card>
+  </div>
 );
 
 export default ExtractedResults;
