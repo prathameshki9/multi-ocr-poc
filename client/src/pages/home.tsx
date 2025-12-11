@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '@/utils/api';
-import Navbar from '@/components/navbar';
-import UploadPanel from '@/components/upload-panel';
+import Sidebar from '@/components/sidebar';
 import DocumentCanvasViewer from '@/components/document-canvas-viewer';
 import ExtractedResults from '@/components/extracted-results';
-import PreviouslyUploadedPanel from '@/components/previously-uploaded-panel';
 import { saveDocument, base64ToFile, type StoredDocument } from '@/utils/mockStorage';
 import type { LayoutItem } from '@/types/ocr';
 
@@ -15,6 +13,7 @@ const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
+  const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null);
 
   useEffect(() => {
     return () => {
@@ -102,39 +101,72 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <Navbar />
-      <main className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
-        <section id="upload" className="flex flex-col gap-6">
-          <UploadPanel
-            fileName={file?.name ?? null}
-            isLoading={isLoading}
-            error={error}
-            onFileChange={handleFileChange}
-            onExtract={handleExtract}
-          />
-          <PreviouslyUploadedPanel
-            onDocumentSelect={handleDocumentSelect}
-            onDocumentDeleted={handleDocumentDeleted}
-          />
-        </section>
+    <div className="flex h-screen overflow-hidden bg-slate-50">
+      {/* Left Sidebar */}
+      <Sidebar
+        fileName={file?.name ?? null}
+        isLoading={isLoading}
+        error={error}
+        onFileChange={handleFileChange}
+        onExtract={handleExtract}
+        onDocumentSelect={handleDocumentSelect}
+        onDocumentDeleted={handleDocumentDeleted}
+      />
 
-        <section id="results" className="grid gap-6 md:grid-cols-2">
-          <DocumentCanvasViewer
-            file={file}
-            previewUrl={previewUrl}
-            extractedData={extracted}
-            selectedItemIndex={selectedItemIndex}
-          />
-          <ExtractedResults
-            extracted={extracted}
-            isLoading={isLoading}
-            error={error}
-            selectedItemIndex={selectedItemIndex}
-            onItemClick={handleItemClick}
-          />
-        </section>
-      </main>
+      {/* Main Content Area */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Header */}
+        <header className="flex-shrink-0 border-b border-slate-200 bg-white px-6 py-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold leading-tight text-slate-900">Document Text Extractor</h1>
+              <p className="text-xs leading-tight text-slate-600">
+                Extract and visualize text from documents using OCR
+              </p>
+            </div>
+          </div>
+        </header>
+
+        {/* Split View: Document & Results */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Document Viewer - Left */}
+          <div className="flex flex-1 flex-col overflow-hidden border-r border-slate-200 bg-white">
+            <div className="flex-shrink-0 border-b border-slate-200 bg-slate-50 px-6 py-3">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
+                Document Preview
+              </h2>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <DocumentCanvasViewer
+                file={file}
+                previewUrl={previewUrl}
+                extractedData={extracted}
+                selectedItemIndex={selectedItemIndex}
+                hoveredItemIndex={hoveredItemIndex}
+              />
+            </div>
+          </div>
+
+          {/* Extracted Results - Right */}
+          <div className="flex flex-1 flex-col overflow-hidden bg-white">
+            <div className="flex-shrink-0 border-b border-slate-200 bg-slate-50 px-6 py-3">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
+                Extracted Data
+              </h2>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <ExtractedResults
+                extracted={extracted}
+                isLoading={isLoading}
+                error={error}
+                selectedItemIndex={selectedItemIndex}
+                onItemClick={handleItemClick}
+                onItemHover={setHoveredItemIndex}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

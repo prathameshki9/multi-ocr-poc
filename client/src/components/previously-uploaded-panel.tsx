@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Card from './ui/card';
-import Button from './ui/button';
 import { getAllDocuments, deleteDocument, type StoredDocument } from '@/utils/mockStorage';
 import { cn } from '@/utils/utils';
 
@@ -77,11 +75,11 @@ const PreviouslyUploadedPanel: React.FC<PreviouslyUploadedPanelProps> = ({
     };
 
     return (
-        <Card title="Previously Uploaded Documents" contentClassName="space-y-3">
+        <div className="space-y-3">
             {documents.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 py-8 text-center">
                     <svg
-                        className="mb-4 h-16 w-16 text-slate-300"
+                        className="mb-3 h-12 w-12 text-slate-300"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -93,46 +91,44 @@ const PreviouslyUploadedPanel: React.FC<PreviouslyUploadedPanelProps> = ({
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                         />
                     </svg>
-                    <p className="text-sm font-medium text-slate-600">No documents uploaded yet</p>
+                    <p className="text-xs font-medium text-slate-600">No documents yet</p>
                     <p className="mt-1 text-xs text-slate-500">
-                        Upload and extract a document to see it here
+                        Upload to get started
                     </p>
                 </div>
             ) : (
                 <div className="space-y-2">
                     <p className="text-xs text-slate-500">
-                        {documents.length} {documents.length === 1 ? 'document' : 'documents'} stored
+                        {documents.length} {documents.length === 1 ? 'document' : 'documents'}
                     </p>
-                    <div className="max-h-96 space-y-2 overflow-y-auto">
+                    <div className="max-h-[400px] space-y-2 overflow-y-auto pr-1">
                         {documents.map((doc) => (
                             <div
                                 key={doc.id}
                                 onClick={() => handleDocumentClick(doc)}
                                 className={cn(
-                                    'group flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-all hover:border-indigo-300 hover:bg-indigo-50/50',
+                                    'group flex cursor-pointer items-start gap-2 rounded-lg border p-2.5 transition-all hover:border-indigo-300 hover:bg-indigo-50/50',
                                     selectedDocId === doc.id
                                         ? 'border-indigo-400 bg-indigo-50 shadow-sm'
                                         : 'border-slate-200 bg-white'
                                 )}
                             >
-                                <div className="flex min-w-0 flex-1 items-start gap-3">
-                                    <div className="mt-0.5 flex-shrink-0">{getFileIcon(doc.fileName)}</div>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="truncate text-sm font-medium text-slate-800">
-                                            {doc.fileName}
-                                        </p>
-                                        <p className="mt-0.5 text-xs text-slate-500">
-                                            Uploaded {formatDate(doc.uploadedAt)}
-                                        </p>
-                                    </div>
+                                <div className="mt-0.5 flex-shrink-0">{getFileIcon(doc.fileName)}</div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="truncate text-xs font-medium text-slate-800">
+                                        {doc.fileName}
+                                    </p>
+                                    <p className="mt-0.5 text-xs text-slate-500">
+                                        {formatDate(doc.uploadedAt)}
+                                    </p>
                                 </div>
-                                <Button
-                                    variant="outline"
+                                <button
                                     onClick={(e) => handleDelete(doc.id, e)}
                                     className={cn(
-                                        'ml-3 flex-shrink-0 border-red-200 px-3 py-1.5 text-xs text-red-600 opacity-0 transition-opacity hover:border-red-300 hover:bg-red-50 hover:text-red-700 group-hover:opacity-100',
+                                        'flex-shrink-0 rounded p-1 text-red-500 opacity-0 transition-opacity hover:bg-red-50 group-hover:opacity-100',
                                         selectedDocId === doc.id && 'opacity-100'
                                     )}
+                                    title="Delete"
                                 >
                                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
@@ -142,14 +138,13 @@ const PreviouslyUploadedPanel: React.FC<PreviouslyUploadedPanelProps> = ({
                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                         />
                                     </svg>
-                                    Delete
-                                </Button>
+                                </button>
                             </div>
                         ))}
                     </div>
                 </div>
             )}
-        </Card>
+        </div>
     );
 };
 

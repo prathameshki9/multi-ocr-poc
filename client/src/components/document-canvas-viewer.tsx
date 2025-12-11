@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Card from './ui/card';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { LayoutItem } from '@/types/ocr';
 
@@ -15,6 +14,7 @@ type DocumentCanvasViewerProps = {
     previewUrl?: string | null;
     extractedData?: LayoutItem[];
     selectedItemIndex?: number | null;
+    hoveredItemIndex?: number | null;
 };
 
 const DocumentCanvasViewer: React.FC<DocumentCanvasViewerProps> = ({
@@ -22,6 +22,7 @@ const DocumentCanvasViewer: React.FC<DocumentCanvasViewerProps> = ({
     previewUrl,
     extractedData = [],
     selectedItemIndex = null,
+    hoveredItemIndex = null,
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -179,17 +180,18 @@ const DocumentCanvasViewer: React.FC<DocumentCanvasViewerProps> = ({
         // Draw the image
         ctx.drawImage(imageData, 0, 0, drawWidth, drawHeight);
 
-        // Filter items for current page
-        const pageItems = extractedData.filter(item => item.page === currentPage);
+        // Draw bounding boxes - only show selected or hovered item
+        extractedData.forEach((item, index) => {
+            // Filter for current page
+            if (item.page !== currentPage) return;
 
-        // Draw bounding boxes - only show selected item
-        pageItems.forEach((item, index) => {
             if (!item.geometry?.BoundingBox) return;
 
             const isSelected = selectedItemIndex === index;
+            const isHovered = hoveredItemIndex === index;
 
-            // Only draw if this item is selected
-            if (!isSelected) return;
+            // Only draw if this item is selected or hovered
+            if (!isSelected && !isHovered) return;
 
             const bbox = item.geometry.BoundingBox;
 
@@ -201,11 +203,22 @@ const DocumentCanvasViewer: React.FC<DocumentCanvasViewerProps> = ({
             const height = bbox.Height * drawHeight + (padding * 2);
 
             // Draw only border - no fill (transparent inside)
-            ctx.strokeStyle = '#4F46E5'; // Indigo border
+            // Use green for hover if not selected, indigo for selected (selection logic overrides hover)
+            // Or better: prioritize selection color, but maybe make hover distinct if we wanted both. 
+            // Here requirement mimics "pick color for that as green" for hover.
+            // If item is selected, it stays indigo. If hovered but not selected, it becomes green.
+
             ctx.lineWidth = 2;
+
+            if (isSelected) {
+                ctx.strokeStyle = '#4F46E5'; // Indigo border for selected
+            } else if (isHovered) {
+                ctx.strokeStyle = '#22c55e'; // Green border for hovered (green-500)
+            }
+
             ctx.strokeRect(x, y, width, height);
         });
-    }, [imageData, extractedData, currentPage, selectedItemIndex, zoom]);
+    }, [imageData, extractedData, currentPage, selectedItemIndex, hoveredItemIndex, zoom]);
 
     // Handle page navigation
     const goToNextPage = () => {
@@ -323,11 +336,9 @@ const DocumentCanvasViewer: React.FC<DocumentCanvasViewerProps> = ({
     };
 
     return (
-        <Card title="Document Visualization" contentClassName="h-[520px] p-0">
-            <div ref={containerRef} className="h-full p-5">
-                {renderContent()}
-            </div>
-        </Card>
+        <div ref={containerRef} className="h-full overflow-y-auto p-6">
+            {renderContent()}
+        </div>
     );
 };
 
